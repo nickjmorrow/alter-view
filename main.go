@@ -37,9 +37,9 @@ type Article struct {
 
 type Todo struct {
 	gorm.Model
-	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
+	TodoId string `json:"id"`
+	Text   string `json:"text"`
+	Done   bool   `json:"done"`
 }
 
 func (todo Todo) TableName() string {
@@ -49,9 +49,9 @@ func (todo Todo) TableName() string {
 var TodoList []Todo
 
 func init() {
-	todo1 := Todo{ID: "a", Text: "A todo not to forget", Done: false}
-	todo2 := Todo{ID: "b", Text: "This is the most important", Done: false}
-	todo3 := Todo{ID: "c", Text: "Please do this or else", Done: false}
+	todo1 := Todo{TodoId: "a", Text: "A todo not to forget", Done: false}
+	todo2 := Todo{TodoId: "b", Text: "This is the most important", Done: false}
+	todo3 := Todo{TodoId: "c", Text: "Please do this or else", Done: false}
 	TodoList = append(TodoList, todo1, todo2, todo3)
 
 	rand.Seed(time.Now().UnixNano())
@@ -79,7 +79,11 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.NewList(todoType),
 			Description: "List of todos",
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return TodoList, nil
+				// return TodoList, nil
+				var todoList []Todo
+				db.Find(&todoList)
+				// json.NewEncoder(w).Encode(&todoList)
+				return todoList, nil
 			},
 		},
 	},
