@@ -10,7 +10,6 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/nickjmorrow/blog/models"
 	"github.com/rs/cors"
-	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
@@ -37,9 +36,14 @@ type Article struct {
 }
 
 type Todo struct {
+	gorm.Model
 	ID   string `json:"id"`
 	Text string `json:"text"`
 	Done bool   `json:"done"`
+}
+
+func (todo Todo) TableName() string {
+	return "todos"
 }
 
 var TodoList []Todo
@@ -113,26 +117,20 @@ func main() {
 	db = models.GetDB()
 	db.Exec("SET search_path TO dbo")
 
+	db.AutoMigrate(&Todo{})
 	db.AutoMigrate(&Animal{})
+
+	h := handler.New(&handler.Config{
+		Schema:   &schema,
+		Pretty:   true,
+		GraphiQL: true,
+	})
 
 	router.HandleFunc("/animals", GetAnimals).Methods("GET")
 	router.HandleFunc("/animals/{id}", GetAnimal).Methods("GET")
 	router.HandleFunc("/animals", CreateResource).Methods("POST")
 	router.HandleFunc("/animals/{id}", DeleteResource).Methods("DELETE")
-	router.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {
-		b, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Printf("%s", b)
-		// fmt.Print(r.Body)
-		// fmt.Print(r.URL)
-		// fmt.Print(r.URL.Query())
-		s := string(b)
-		result := executeQuery(s, schema)
-		// result := executeQuery(r.URL.Query().Get("query"), schema)
-		json.NewEncoder(w).Encode(result)
-	})
+	router.Handle("/graphql", h)
 
 	handler := cors.Default().Handler(router)
 
