@@ -4,93 +4,91 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
+	"github.com/joho/godotenv"
+	"github.com/nickjmorrow/blog/models"
+	"github.com/rs/cors"
 	"log"
-	"math/rand"
 	"net/http"
-	"strconv"
+	"os"
 )
 
-type Book struct {
-	ID     string  `json:"id"`
-	Isbn   string  `json:"isbn"`
-	Title  string  `json:"title"`
-	Author *Author `json:"author"`
+type Animal struct {
+	gorm.Model
+
+	AnimalId int
+	Name     string
 }
 
-type Author struct {
-	Firstname string `json:"firstname"`
-	Lastname  string `json:"lastname"`
+type Article struct {
+	gorm.Model
+
+	ArticleId int
+	Name      string
 }
 
-var books []Book
-
-func getBooks(writer http.ResponseWriter, r *http.Request) {
-	writer.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(writer).Encode(books)
+func (animal Animal) TableName() string {
+	return "animals"
 }
 
-func getBook(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	params := mux.Vars(r)
-
-	for _, item := range books {
-		if item.ID == params["id"] {
-			json.NewEncoder(w).Encode(item)
-			return
-		}
-	}
-	json.NewEncoder(w).Encode(&Book{})
-}
-
-func createBook(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	var book Book
-	_ = json.NewDecoder(r.Body).Decode(&book)
-	book.ID = strconv.Itoa(rand.Intn(10000000))
-	books = append(books, book)
-	json.NewEncoder(w).Encode(book)
-}
-
-func updateBook(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	params := mux.Vars(r)
-	for index, item := range books {
-		if item.ID == params["id"] {
-			books = append(books[:index], books[index+1:]...)
-			var book Book
-			_ = json.NewDecoder(r.Body).Decode(&book)
-			book.ID = params["id"]
-			books = append(books, book)
-			json.NewEncoder(w).Encode(book)
-			return
-		}
-	}
-	json.NewEncoder(w).Encode(books)
-}
-
-func deleteBook(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	params := mux.Vars(r)
-	for index, item := range books {
-		if item.ID == params["id"] {
-			books = append(books[:index], books[index+1:]...)
-			break
-		}
-	}
-	json.NewEncoder(w).Encode(books)
-}
+var db *gorm.DB
 
 func main() {
-	// init router
-	r := mux.NewRouter()
+	e := godotenv.Load()
+	if e != nil {
+		fmt.Print(e)
+	}
+	router := mux.NewRouter()
 
-	books = append(books, Book{ID: "1", Isbn: "43838", Title: "Book One", Author: &Author{Firstname: "john", Lastname: "doe"}})
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8000"
+	}
 
-	r.HandleFunc("/api/books", getBooks).Methods("GET")
-	r.HandleFunc("/api/book/{id}", getBook).Methods("GET")
-	r.HandleFunc("/api/books", createBook).Methods("POST")
-	r.HandleFunc("/api/books/{id}", updateBook).Methods("PUT")
-	r.HandleFunc("/api/books/{id}", deleteBook).Methods("DELETE")
-	fmt.Println("Listening...")
-	log.Fatal(http.ListenAndServe(":8000", r))
+	db = models.GetDB()
+	db.Exec("SET search_path TO dbo")
+
+	db.AutoMigrate(&Animal{})
+
+	router.HandleFunc("/animals", GetAnimals).Methods("GET")
+	router.HandleFunc("/animals/{id}", GetAnimal).Methods("GET")
+	router.HandleFunc("/animals", CreateResource).Methods("POST")
+	router.HandleFunc("/animals/{id}", DeleteResource).Methods("DELETE")
+
+	handler := cors.Default().Handler(router)
+
+	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), handler))
+
+}
+
+func GetAnimals(w http.ResponseWriter, r *http.Request) {
+	var animals []Animal
+	db.Find(&animals)
+	json.NewEncoder(w).Encode(&animals)
+}
+
+func GetAnimal(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	var resource Animal
+	db.First(&resource, params["Id"])
+	json.NewEncoder(w).Encode(&resource)
+}
+
+func CreateResource(w http.ResponseWriter, r *http.Request) {
+	var resource Animal
+	json.NewDecoder(r.Body).Decode(&resource)
+	db.Create(&resource)
+	json.NewEncoder(w).Encode(&resource)
+}
+
+func DeleteResource(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	var resource Animal
+	db.First(&resource, params["Animal_Id"])
+	db.Delete(&resource)
+
+	var resources []Animal
+	db.Find(&resources)
+	json.NewEncoder(w).Encode(&resources)
+
 }
