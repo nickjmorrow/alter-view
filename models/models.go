@@ -5,15 +5,9 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/joho/godotenv"
+	"github.com/nickjmorrow/blog/types"
 	"os"
 )
-
-type Animal struct {
-	gorm.Model
-
-	Animal_Id int
-	Name      string
-}
 
 var db *gorm.DB
 
@@ -36,7 +30,8 @@ func init() {
 	}
 
 	db = conn
-	// db.Debug().AutoMigrate(&Account{}, &Contact{})
+	db.Exec("SET search_path TO dbo")
+	db.Debug().AutoMigrate(&types.Article{})
 }
 
 func GetDB() *gorm.DB {
