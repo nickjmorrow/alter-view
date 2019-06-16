@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { graphql, useStaticQuery } from 'gatsby';
 import { Article } from '../types';
-import { Link } from 'react-router-dom';
+import { Link } from '@reach/router';
+import { getPathFromTitle } from '../utilities/getPathFromTitle';
 
 export const GatsbyQuery = graphql`
 	{
@@ -17,7 +18,7 @@ export const GatsbyQuery = graphql`
 	}
 `;
 
-export const ArticleList: React.FC = () => {
+export const ArticleList: React.FC<{ path: string }> = ({ path }) => {
 	const {
 		data: { articles },
 	} = useStaticQuery<{ data: { articles: Article[] } }>(GatsbyQuery);
@@ -33,9 +34,3 @@ export const ArticleList: React.FC = () => {
 		</div>
 	);
 };
-
-const getPathFromTitle = (title: string) =>
-	title
-		.split(' ')
-		.join('-')
-		.toLowerCase();

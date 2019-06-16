@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArticleList } from '../components/ArticleList';
 import '../index.css';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { Router } from '@reach/router';
 import { graphql, useStaticQuery } from 'gatsby';
 import { Article as ArticleType } from '../types';
 import { getPathFromTitle } from '../utilities/getPathFromTitle';
@@ -17,6 +17,9 @@ export const GatsbyQuery = graphql`
 		}
 	}
 `;
+const Route: React.FC<{ path: string }> = ({ path, children }) => {
+	return children;
+};
 
 const IndexPage = () => {
 	const {
@@ -26,12 +29,10 @@ const IndexPage = () => {
 	return (
 		<>
 			<Router>
-				<>
-					<Route path={'/'} exact component={ArticleList} />
-					{articles.map(a => (
-						<Route path={'/' + getPathFromTitle(a.title)} component={() => <Article />} />
-					))}
-				</>
+				<ArticleList path={'/'} />
+				{articles.map(a => (
+					<Article path={getPathFromTitle(a.title)} />
+				))}
 			</Router>
 		</>
 	);

@@ -1,10 +1,9 @@
-import * as React from 'react';
-import { Article as ArticleType } from '../types';
-import withRouter from 'react-router/withRouter';
-import { RouterProps } from '@reach/router';
+import { Location } from '@reach/router';
 import { graphql, useStaticQuery } from 'gatsby';
-import { getTitleFromPath } from '../utilities/getTitleFromPath';
+import * as React from 'react';
 import ReactHTMLParser from 'react-html-parser';
+import { Article as ArticleType } from '../types';
+import { getTitleFromPath } from '../utilities/getTitleFromPath';
 
 export const GatsbyQuery = graphql`
 	{
@@ -20,19 +19,27 @@ export const GatsbyQuery = graphql`
 	}
 `;
 
-const ArticleInternal: React.FC<RouterProps> = ({ location: { pathname } }) => {
+const ArticleInternal: React.FC<{ path: string }> = ({ path }) => {
 	const {
 		data: { articles },
 	} = useStaticQuery<{ data: { articles: ArticleType[] } }>(GatsbyQuery);
-	const articleTitle = getTitleFromPath(pathname);
-	const matchedArticle = articles.find(a => a.title.toLowerCase() === articleTitle);
+
 	return (
-		<div className="article">
-			<h1>{matchedArticle.title}</h1>
-			<h2>{matchedArticle.tagline}</h2>
-			<div className="content">{ReactHTMLParser(matchedArticle.content)}</div>
-		</div>
+		<Location>
+			{props => {
+				const { location } = props;
+				const articleTitle = getTitleFromPath(location.pathname);
+				const matchedArticle = articles.find(a => a.title.toLowerCase() === articleTitle);
+				return (
+					<div className="article">
+						<h1>{matchedArticle.title}</h1>
+						<h2>{matchedArticle.tagline}</h2>
+						<div className="content">{ReactHTMLParser(matchedArticle.content)}</div>
+					</div>
+				);
+			}}
+		</Location>
 	);
 };
 
-export const Article = withRouter(ArticleInternal);
+export const Article = ArticleInternal;
