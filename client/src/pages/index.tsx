@@ -1,35 +1,38 @@
-import { graphql, useStaticQuery } from 'gatsby';
 import React from 'react';
-import ReactHtmlParser from 'react-html-parser';
+import { ArticleList } from '../components/ArticleList';
 import '../index.css';
-import { Article } from '../types';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { graphql, useStaticQuery } from 'gatsby';
+import { Article as ArticleType } from '../types';
+import { getPathFromTitle } from '../utilities/getPathFromTitle';
+import { Article } from '../components/Article';
 
 export const GatsbyQuery = graphql`
 	{
 		data {
 			articles {
 				articleId
-				content
-				tagline
 				title
-				dateCreated
 			}
 		}
 	}
 `;
 
-interface Data {
-	articles: Article[];
-}
-
 const IndexPage = () => {
-	const { data } = useStaticQuery<{ data: Data }>(GatsbyQuery);
-	console.log(data);
+	const {
+		data: { articles },
+	} = useStaticQuery<{ data: { articles: ArticleType[] } }>(GatsbyQuery);
+
 	return (
 		<>
-			{data.articles.map(tl => (
-				<div>{ReactHtmlParser(tl.content)}</div>
-			))}
+			<Router>
+				<>
+					<Route path={'/'} exact component={ArticleList} />
+					{articles.map(a => (
+						<Route path={'/' + getPathFromTitle(a.title)} component={() => <Article />} />
+					))}
+				</>
+			</Router>
 		</>
 	);
 };

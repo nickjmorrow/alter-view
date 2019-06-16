@@ -35,5 +35,6 @@ func init() {
 }
 
 func GetDB() *gorm.DB {
+	db.Exec("SET search_path TO dbo")
 	return db
 }

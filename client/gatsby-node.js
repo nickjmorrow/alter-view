@@ -1,7 +1,37 @@
-/**
- * Implement Gatsby's Node APIs in this file.
- *
- * See: https://www.gatsbyjs.org/docs/node-apis/
- */
+const path = require('path');
 
-// You can delete this file if you're not using it
+const getPathFromTitle = title =>
+	title
+		.split(' ')
+		.join('-')
+		.toLowerCase();
+
+exports.createPages = ({ graphql, actions }) => {
+	const { createPage } = actions;
+
+	return graphql(`
+		{
+			data {
+				articles {
+					articleId
+					content
+					tagline
+					title
+					dateCreated
+				}
+			}
+		}
+	`).then(result => {
+		if (result.errors) {
+			return Promise.reject(result.errors);
+		}
+		console.log(result.data.data);
+		return result.data.data.articles.forEach(({ title }) => {
+			console.log(getPathFromTitle(title));
+			return createPage({
+				path: getPathFromTitle(title),
+				component: path.resolve(__dirname, `src/components/ArticlePage.tsx`),
+			});
+		});
+	});
+};
