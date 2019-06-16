@@ -1,5 +1,5 @@
 var getServerUrl = require('./getServerUrl');
-// const path = require('path');
+const path = require('path');
 
 module.exports = {
 	siteMetadata: {
@@ -45,7 +45,7 @@ module.exports = {
 		{
 			resolve: `gatsby-plugin-favicon`,
 			options: {
-				logo: './assets/favicon.png',
+				logo: path.resolve(__dirname, 'assets/favicon.png'),
 			},
 		},
 		{
