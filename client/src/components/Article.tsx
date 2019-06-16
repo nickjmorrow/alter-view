@@ -29,6 +29,7 @@ const ArticleInternal: React.FC<{ path: string }> = ({ path }) => {
 			{props => {
 				const { location } = props;
 				const articleTitle = getTitleFromPath(location.pathname);
+				console.log(articleTitle);
 				const matchedArticle = articles.find(a => a.title.toLowerCase() === articleTitle);
 				return (
 					<div className="article">
