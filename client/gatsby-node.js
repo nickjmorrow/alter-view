@@ -1,7 +1,12 @@
 const path = require('path');
 
+const puncutation = ['?', '!', ',', '.'];
+
 const getPathFromTitle = title =>
 	title
+		.split('')
+		.filter(l => !puncutation.some(p => p === l))
+		.join('')
 		.split(' ')
 		.join('-')
 		.toLowerCase();

@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"author": "Nicholas Morrow <njmorrow95@gmail.com>",
 	"dependencies": {
-		"@nickjmorrow/react-component-library": "0.0.35",
+		"@nickjmorrow/react-component-library": "0.0.37",
 		"@reach/router": "^1.2.1",
 		"babel-plugin-styled-components": "^1.10.0",
 		"gatsby": "^2.8.2",
@@ -22,6 +22,8 @@
 		"gatsby-source-filesystem": "^2.0.38",
 		"gatsby-source-graphql": "^2.0.18",
 		"gatsby-transformer-sharp": "^2.1.21",
+		"html-react-parser": "^0.7.1",
+		"normalize.css": "^8.0.1",
 		"prop-types": "^15.7.2",
 		"react": "^16.8.6",
 		"react-anchor-link-smooth-scroll": "^1.0.12",

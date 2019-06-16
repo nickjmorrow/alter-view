@@ -42,23 +42,27 @@ module.exports = {
 				url: getServerUrl(),
 			},
 		},
-		// {
-		// 	resolve: `gatsby-plugin-favicon`,
-		// 	options: {
-		// 		logo: './assets/favicon.png',
-		// 	},
-		// },
-		// {
-		// 	resolve: `gatsby-plugin-prefetch-google-fonts`,
-		// 	options: {
-		// 		fonts: [
-		// 			{
-		// 				family: 'Overpass',
-		// 				variants: [`400`, `600`, `700`, `800`],
-		// 			},
-		// 		],
-		// 	},
-		// },
+		{
+			resolve: `gatsby-plugin-favicon`,
+			options: {
+				logo: './assets/favicon.png',
+			},
+		},
+		{
+			resolve: `gatsby-plugin-prefetch-google-fonts`,
+			options: {
+				fonts: [
+					{
+						family: 'Overpass',
+						variants: [`400`, `600`, `700`, `800`],
+					},
+					{
+						family: 'Fira Mono',
+						variants: [`400`, `700`],
+					},
+				],
+			},
+		},
 		// {
 		// 	resolve: `gatsby-plugin-styled-components`,
 		// },
