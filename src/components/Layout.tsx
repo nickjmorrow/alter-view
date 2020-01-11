@@ -10,7 +10,8 @@ import PropTypes from 'prop-types';
 import { useStaticQuery, graphql } from 'gatsby';
 
 import Header from './Header';
-import './layout.css';
+import 'components/reset.css';
+import 'components/styles.css';
 import { Footer } from 'components/Footer';
 
 const Layout: React.FC<{ children: React.ReactNode; mainStyle?: React.CSSProperties }> = ({ children, mainStyle }) => {
