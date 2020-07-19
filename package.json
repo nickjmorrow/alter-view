@@ -4,6 +4,15 @@
   "description": "",
   "version": "0.1.0",
   "author": "",
+  "scripts": {
+    "build": "gatsby build",
+    "build:watch": "gatsby develop",
+    "deploy": "npm install -g gatsby && npm install && npm run serve",
+    "serve": "NODE_ENV=production gatsby serve",
+    "test": "jest",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "lint": "eslint '*/**/*.{ts,tsx}' --quiet --fix"
+  },
   "dependencies": {
     "@nickjmorrow/react-component-library": "0.0.54",
     "calendar-base": "^0.3.0",
@@ -63,15 +72,6 @@
     "gatsby"
   ],
   "license": "MIT",
-  "scripts": {
-    "build": "gatsby build",
-    "build:watch": "gatsby develop",
-    "deploy": "npm install -g gatsby && npm install && npm run serve",
-    "serve": "NODE_ENV=production gatsby serve",
-    "test": "jest",
-    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
-    "lint": "eslint '*/**/*.{ts,tsx}' --quiet --fix"
-  },
   "husky": {
     "hooks": {
       "pre-push": "npm run build"
