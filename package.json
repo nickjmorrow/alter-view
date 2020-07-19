@@ -6,7 +6,7 @@
   "author": "",
   "scripts": {
     "build": "gatsby build",
-    "build:watch": "gatsby develop",
+    "dev": "gatsby develop",
     "deploy": "npm install -g gatsby && npm install && npm run serve",
     "serve": "NODE_ENV=production gatsby serve",
     "test": "jest",
